@@ -1,6 +1,7 @@
 package com.liaoyb.qingqing.uaa.config;
 
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,11 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 
-import javax.annotation.PostConstruct;
-
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class UaaWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class UaaWebSecurityConfiguration extends WebSecurityConfigurerAdapter implements InitializingBean {
 
     private final UserDetailsService userDetailsService;
 
@@ -29,8 +28,8 @@ public class UaaWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
 
-    @PostConstruct
-    public void init() throws Exception {
+    @Override
+    public void afterPropertiesSet() throws Exception {
         try {
             authenticationManagerBuilder
                 .userDetailsService(userDetailsService)
@@ -39,7 +38,6 @@ public class UaaWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             throw new BeanInitializationException("Security configuration failed", e);
         }
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

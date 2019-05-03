@@ -8,9 +8,8 @@ import com.liaoyb.qingqing.uaa.service.dto.UserDTO;
 import com.liaoyb.qingqing.uaa.service.util.RandomUtil;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +17,6 @@ import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -31,14 +29,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
- * Test class for the UserResource REST controller.
- *
- * @see UserService
+ * Integration tests for {@link UserService}.
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = UaaApp.class)
 @Transactional
-public class UserServiceIntTest {
+public class UserServiceIT {
+
+    private static final String DEFAULT_LOGIN = "johndoe";
+
+    private static final String DEFAULT_EMAIL = "johndoe@localhost";
+
+    private static final String DEFAULT_FIRSTNAME = "john";
+
+    private static final String DEFAULT_LASTNAME = "doe";
+
+    private static final String DEFAULT_IMAGEURL = "http://placehold.it/50x50";
+
+    private static final String DEFAULT_LANGKEY = "en";
 
     @Autowired
     private UserRepository userRepository;
@@ -50,21 +57,21 @@ public class UserServiceIntTest {
     private AuditingHandler auditingHandler;
 
     @Mock
-    DateTimeProvider dateTimeProvider;
+    private DateTimeProvider dateTimeProvider;
 
     private User user;
 
-    @Before
+    @BeforeEach
     public void init() {
         user = new User();
-        user.setLogin("johndoe");
+        user.setLogin(DEFAULT_LOGIN);
         user.setPassword(RandomStringUtils.random(60));
         user.setActivated(true);
-        user.setEmail("johndoe@localhost");
-        user.setFirstName("john");
-        user.setLastName("doe");
-        user.setImageUrl("http://placehold.it/50x50");
-        user.setLangKey("en");
+        user.setEmail(DEFAULT_EMAIL);
+        user.setFirstName(DEFAULT_FIRSTNAME);
+        user.setLastName(DEFAULT_LASTNAME);
+        user.setImageUrl(DEFAULT_IMAGEURL);
+        user.setLangKey(DEFAULT_LANGKEY);
 
         when(dateTimeProvider.getNow()).thenReturn(Optional.of(LocalDateTime.now()));
         auditingHandler.setDateTimeProvider(dateTimeProvider);
@@ -184,9 +191,9 @@ public class UserServiceIntTest {
         user.setActivated(false);
         userRepository.saveAndFlush(user);
 
-        assertThat(userRepository.findOneByLogin("johndoe")).isPresent();
+        assertThat(userRepository.findOneByLogin(DEFAULT_LOGIN)).isPresent();
         userService.removeNotActivatedUsers();
-        assertThat(userRepository.findOneByLogin("johndoe")).isNotPresent();
+        assertThat(userRepository.findOneByLogin(DEFAULT_LOGIN)).isNotPresent();
     }
 
 }
