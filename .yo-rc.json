@@ -1,0 +1,39 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.liaoyb.qingqing.uaa",
+      "nativeLanguage": "zh-cn"
+    },
+    "jhipsterVersion": "5.8.2",
+    "applicationType": "uaa",
+    "baseName": "uaa",
+    "packageName": "com.liaoyb.qingqing.uaa",
+    "packageFolder": "com/liaoyb/qingqing/uaa",
+    "serverPort": "9999",
+    "authenticationType": "uaa",
+    "cacheProvider": "hazelcast",
+    "enableHibernateCache": false,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": "eureka",
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "NGRiOWQ5ZTFjZmVjODYxNjQwMmFmMjliNmRkOThiYTZhZTk3MmY3Yzk3NDBmNzM3N2JjMGQ5YmRmNmU3MTMwYzgxOWMwZmE4ZjFiNTBhZTA4OTkyMDAzZDM5NzExMWFmY2Q0ZjUxM2M2YzFiMjRhN2RkMTA4MTQ3ZDk2ZDI0NzE=",
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "clientPackageManager": "npm",
+    "nativeLanguage": "zh-cn",
+    "languages": [
+      "zh-cn"
+    ],
+    "skipClient": true
+  }
+}
