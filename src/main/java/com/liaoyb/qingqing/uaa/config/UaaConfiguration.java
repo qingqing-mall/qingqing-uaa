@@ -162,7 +162,7 @@ public class UaaConfiguration extends AuthorizationServerConfigurerAdapter imple
 
     /**
      * Apply the token converter (and enhancer) for token store.
-     * @return the JwtTokenStore managing the tokens.
+     * @return the {@link JwtTokenStore} managing the tokens.
      */
     @Bean
     public JwtTokenStore tokenStore() {
@@ -173,7 +173,7 @@ public class UaaConfiguration extends AuthorizationServerConfigurerAdapter imple
      * This bean generates an token enhancer, which manages the exchange between JWT acces tokens and Authentication
      * in both directions.
      *
-     * @return an access token converter configured with the authorization server's public/private keys
+     * @return an access token converter configured with the authorization server's public/private keys.
      */
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {

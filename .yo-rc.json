@@ -4,7 +4,7 @@
       "packageName": "com.liaoyb.qingqing.uaa",
       "nativeLanguage": "zh-cn"
     },
-    "jhipsterVersion": "5.8.2",
+    "jhipsterVersion": "6.0.0",
     "applicationType": "uaa",
     "baseName": "uaa",
     "packageName": "com.liaoyb.qingqing.uaa",
