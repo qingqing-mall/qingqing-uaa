@@ -3,7 +3,6 @@ package com.liaoyb.qingqing.uaa.security;
 import com.liaoyb.qingqing.uaa.UaaApp;
 import com.liaoyb.qingqing.uaa.domain.User;
 import com.liaoyb.qingqing.uaa.repository.UserRepository;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,32 +45,29 @@ public class DomainUserDetailsServiceIT {
     @BeforeEach
     public void init() {
         userOne = new User();
-        userOne.setLogin(USER_ONE_LOGIN);
+        userOne.setUsername(USER_ONE_LOGIN);
         userOne.setPassword(RandomStringUtils.random(60));
-        userOne.setActivated(true);
+        userOne.setActiveStatus(1);
         userOne.setEmail(USER_ONE_EMAIL);
-        userOne.setFirstName("userOne");
-        userOne.setLastName("doe");
+        userOne.setNickname("userOne");
         userOne.setLangKey("en");
         userRepository.save(userOne);
 
         userTwo = new User();
-        userTwo.setLogin(USER_TWO_LOGIN);
+        userTwo.setUsername(USER_TWO_LOGIN);
         userTwo.setPassword(RandomStringUtils.random(60));
-        userTwo.setActivated(true);
+        userTwo.setActiveStatus(1);
         userTwo.setEmail(USER_TWO_EMAIL);
-        userTwo.setFirstName("userTwo");
-        userTwo.setLastName("doe");
+        userTwo.setNickname("userTwo");
         userTwo.setLangKey("en");
         userRepository.save(userTwo);
 
         userThree = new User();
-        userThree.setLogin(USER_THREE_LOGIN);
+        userThree.setUsername(USER_THREE_LOGIN);
         userThree.setPassword(RandomStringUtils.random(60));
-        userThree.setActivated(false);
+        userThree.setActiveStatus(0);
         userThree.setEmail(USER_THREE_EMAIL);
-        userThree.setFirstName("userThree");
-        userThree.setLastName("doe");
+        userThree.setNickname("userThree");
         userThree.setLangKey("en");
         userRepository.save(userThree);
     }

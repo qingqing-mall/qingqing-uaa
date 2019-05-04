@@ -64,12 +64,11 @@ public class UserServiceIT {
     @BeforeEach
     public void init() {
         user = new User();
-        user.setLogin(DEFAULT_LOGIN);
+        user.setUsername(DEFAULT_LOGIN);
         user.setPassword(RandomStringUtils.random(60));
-        user.setActivated(true);
+        user.setActiveStatus(1);
         user.setEmail(DEFAULT_EMAIL);
-        user.setFirstName(DEFAULT_FIRSTNAME);
-        user.setLastName(DEFAULT_LASTNAME);
+        user.setNickname(DEFAULT_FIRSTNAME);
         user.setImageUrl(DEFAULT_IMAGEURL);
         user.setLangKey(DEFAULT_LANGKEY);
 
@@ -94,10 +93,10 @@ public class UserServiceIT {
     @Test
     @Transactional
     public void assertThatOnlyActivatedUserCanRequestPasswordReset() {
-        user.setActivated(false);
+        user.setActiveStatus(0);
         userRepository.saveAndFlush(user);
 
-        Optional<User> maybeUser = userService.requestPasswordReset(user.getLogin());
+        Optional<User> maybeUser = userService.requestPasswordReset(user.getUsername());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
@@ -107,7 +106,7 @@ public class UserServiceIT {
     public void assertThatResetKeyMustNotBeOlderThan24Hours() {
         Instant daysAgo = Instant.now().minus(25, ChronoUnit.HOURS);
         String resetKey = RandomUtil.generateResetKey();
-        user.setActivated(true);
+        user.setActiveStatus(1);
         user.setResetDate(daysAgo);
         user.setResetKey(resetKey);
         userRepository.saveAndFlush(user);
@@ -121,7 +120,7 @@ public class UserServiceIT {
     @Transactional
     public void assertThatResetKeyMustBeValid() {
         Instant daysAgo = Instant.now().minus(25, ChronoUnit.HOURS);
-        user.setActivated(true);
+        user.setActiveStatus(1);
         user.setResetDate(daysAgo);
         user.setResetKey("1234");
         userRepository.saveAndFlush(user);
@@ -137,7 +136,7 @@ public class UserServiceIT {
         String oldPassword = user.getPassword();
         Instant daysAgo = Instant.now().minus(2, ChronoUnit.HOURS);
         String resetKey = RandomUtil.generateResetKey();
-        user.setActivated(true);
+        user.setActiveStatus(1);
         user.setResetDate(daysAgo);
         user.setResetKey(resetKey);
         userRepository.saveAndFlush(user);
@@ -156,28 +155,28 @@ public class UserServiceIT {
     public void testFindNotActivatedUsersByCreationDateBefore() {
         Instant now = Instant.now();
         when(dateTimeProvider.getNow()).thenReturn(Optional.of(now.minus(4, ChronoUnit.DAYS)));
-        user.setActivated(false);
+        user.setActiveStatus(0);
         User dbUser = userRepository.saveAndFlush(user);
         dbUser.setCreatedDate(now.minus(4, ChronoUnit.DAYS));
         userRepository.saveAndFlush(user);
-        List<User> users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
+        List<User> users = userRepository.findAllByActivationStatusAndCreatedDateBefore(0, now.minus(3, ChronoUnit.DAYS));
         assertThat(users).isNotEmpty();
         userService.removeNotActivatedUsers();
-        users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
+        users = userRepository.findAllByActivationStatusAndCreatedDateBefore(0, now.minus(3, ChronoUnit.DAYS));
         assertThat(users).isEmpty();
     }
 
     @Test
     @Transactional
     public void assertThatAnonymousUserIsNotGet() {
-        user.setLogin(Constants.ANONYMOUS_USER);
-        if (!userRepository.findOneByLogin(Constants.ANONYMOUS_USER).isPresent()) {
+        user.setUsername(Constants.ANONYMOUS_USER);
+        if (!userRepository.findOneByUsername(Constants.ANONYMOUS_USER).isPresent()) {
             userRepository.saveAndFlush(user);
         }
         final PageRequest pageable = PageRequest.of(0, (int) userRepository.count());
         final Page<UserDTO> allManagedUsers = userService.getAllManagedUsers(pageable);
         assertThat(allManagedUsers.getContent().stream()
-            .noneMatch(user -> Constants.ANONYMOUS_USER.equals(user.getLogin())))
+            .noneMatch(user -> Constants.ANONYMOUS_USER.equals(user.getUsername())))
             .isTrue();
     }
 
@@ -188,12 +187,12 @@ public class UserServiceIT {
         // custom "now" for audit to use as creation date
         when(dateTimeProvider.getNow()).thenReturn(Optional.of(Instant.now().minus(30, ChronoUnit.DAYS)));
 
-        user.setActivated(false);
+        user.setActiveStatus(0);
         userRepository.saveAndFlush(user);
 
-        assertThat(userRepository.findOneByLogin(DEFAULT_LOGIN)).isPresent();
+        assertThat(userRepository.findOneByUsername(DEFAULT_LOGIN)).isPresent();
         userService.removeNotActivatedUsers();
-        assertThat(userRepository.findOneByLogin(DEFAULT_LOGIN)).isNotPresent();
+        assertThat(userRepository.findOneByUsername(DEFAULT_LOGIN)).isNotPresent();
     }
 
 }

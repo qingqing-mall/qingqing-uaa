@@ -1,57 +1,154 @@
 package com.liaoyb.qingqing.uaa.service.dto;
-
-import com.liaoyb.qingqing.uaa.config.Constants;
-
-import com.liaoyb.qingqing.uaa.domain.Authority;
+import com.liaoyb.qingqing.uaa.domain.Role;
 import com.liaoyb.qingqing.uaa.domain.User;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
-import javax.validation.constraints.*;
 import java.time.Instant;
+import javax.validation.constraints.*;
+import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A DTO representing a user, with his authorities.
+ * A DTO for the {@link com.liaoyb.qingqing.uaa.domain.User} entity.
  */
-public class UserDTO {
+@Data
+public class UserDTO implements Serializable {
 
     private Long id;
 
-    @NotBlank
-    @Pattern(regexp = Constants.LOGIN_REGEX)
-    @Size(min = 1, max = 50)
-    private String login;
+    /**
+     * 用户名
+     */
+    @NotNull
+    @ApiModelProperty(value = "用户名", required = true)
+    private String username;
 
-    @Size(max = 50)
-    private String firstName;
+    /**
+     * 昵称
+     */
+    @NotNull
+    @ApiModelProperty(value = "昵称", required = true)
+    private String nickname;
 
-    @Size(max = 50)
-    private String lastName;
-
-    @Email
-    @Size(min = 5, max = 254)
+    /**
+     * 邮箱
+     */
+    @NotNull
+    @ApiModelProperty(value = "邮箱", required = true)
     private String email;
 
-    @Size(max = 256)
+    /**
+     * 密码
+     */
+    @NotNull
+    @ApiModelProperty(value = "密码", required = true)
+    private String password;
+
+    /**
+     * 手机号码
+     */
+    @NotNull
+    @ApiModelProperty(value = "手机号码", required = true)
+    private String phone;
+
+    /**
+     * 头像
+     */
+    @NotNull
+    @ApiModelProperty(value = "头像", required = true)
     private String imageUrl;
 
-    private boolean activated = false;
+    /**
+     * 性别：0->未知；1->男；2->女
+     */
+    @NotNull
+    @ApiModelProperty(value = "性别：0->未知；1->男；2->女", required = true)
+    private Integer gender;
 
-    @Size(min = 2, max = 6)
+    /**
+     * 生日
+     */
+    @NotNull
+    @ApiModelProperty(value = "生日", required = true)
+    private Instant birthday;
+
+    /**
+     * 所在城市
+     */
+    @NotNull
+    @ApiModelProperty(value = "所在城市", required = true)
+    private String city;
+
+    /**
+     * 语言
+     */
+    @Size(min = 2, max = 20)
+    @ApiModelProperty(value = "语言")
     private String langKey;
 
-    private String createdBy;
+    /**
+     * 帐号启用状态:0->禁用；1->启用
+     */
+    @NotNull
+    @ApiModelProperty(value = "帐号启用状态:0->禁用；1->启用", required = true)
+    private Integer activeStatus;
 
+    /**
+     * 帐号激活状态:0-未激活；1-已激活
+     */
+    @NotNull
+    @ApiModelProperty(value = "帐号激活状态:0-未激活；1-已激活", required = true)
+    private Integer activationStatus;
+
+    /**
+     * 激活key
+     */
+    @Size(max = 20)
+    @ApiModelProperty(value = "激活key")
+    private String activationKey;
+
+    /**
+     * 重置密码key
+     */
+    @Size(max = 20)
+    @ApiModelProperty(value = "重置密码key")
+    private String resetKey;
+
+    /**
+     * 重置密码时间(有效期24小时)
+     */
+    @ApiModelProperty(value = "重置密码时间(有效期24小时)")
+    private Instant resetDate;
+
+    /**
+     * 创建者
+     */
+    @ApiModelProperty(value = "创建者")
+    private Long createdBy;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
     private Instant createdDate;
 
-    private String lastModifiedBy;
+    /**
+     * 更新者
+     */
+    @ApiModelProperty(value = "更新者")
+    private Long lastModifiedBy;
 
+    /**
+     * 最后更新时间
+     */
+    @ApiModelProperty(value = "最后更新时间")
     private Instant lastModifiedDate;
 
-    private Set<String> authorities;
+    private Set<String> roles;
+
 
     public UserDTO() {
         // Empty constructor needed for Jackson.
@@ -59,141 +156,45 @@ public class UserDTO {
 
     public UserDTO(User user) {
         this.id = user.getId();
-        this.login = user.getLogin();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
+        this.username = user.getUsername();
+        this.nickname = user.getNickname();
         this.email = user.getEmail();
-        this.activated = user.getActivated();
+        this.phone = user.getPhone();
         this.imageUrl = user.getImageUrl();
+        this.gender = user.getGender();
+        this.birthday = user.getBirthday();
+        this.city = user.getCity();
         this.langKey = user.getLangKey();
+        this.activeStatus = user.getActiveStatus();
+
         this.createdBy = user.getCreatedBy();
         this.createdDate = user.getCreatedDate();
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
-        this.authorities = user.getAuthorities().stream()
-            .map(Authority::getName)
-            .collect(Collectors.toSet());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(boolean activated) {
-        this.activated = activated;
-    }
-
-    public String getLangKey() {
-        return langKey;
-    }
-
-    public void setLangKey(String langKey) {
-        this.langKey = langKey;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Instant getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
-
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
-
-    public Instant getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Instant lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Set<String> getAuthorities() {
-        return authorities;
-    }
-
-    public void setAuthorities(Set<String> authorities) {
-        this.authorities = authorities;
+        this.roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public String toString() {
-        return "UserDTO{" +
-            "login='" + login + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", imageUrl='" + imageUrl + '\'' +
-            ", activated=" + activated +
-            ", langKey='" + langKey + '\'' +
-            ", createdBy=" + createdBy +
-            ", createdDate=" + createdDate +
-            ", lastModifiedBy='" + lastModifiedBy + '\'' +
-            ", lastModifiedDate=" + lastModifiedDate +
-            ", authorities=" + authorities +
-            "}";
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        UserDTO userDTO = (UserDTO) o;
+        if (userDTO.getId() == null || getId() == null) {
+            return false;
+        }
+        return Objects.equals(getId(), userDTO.getId());
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getId());
+    }
+
 }

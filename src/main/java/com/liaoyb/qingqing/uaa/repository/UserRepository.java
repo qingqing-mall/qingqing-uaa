@@ -20,30 +20,30 @@ import java.time.Instant;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    String USERS_BY_LOGIN_CACHE = "usersByLogin";
+    String USERS_BY_USERNAME_CACHE = "usersByUsername";
 
     String USERS_BY_EMAIL_CACHE = "usersByEmail";
 
     Optional<User> findOneByActivationKey(String activationKey);
 
-    List<User> findAllByActivatedIsFalseAndCreatedDateBefore(Instant dateTime);
+    List<User> findAllByActivationStatusAndCreatedDateBefore(Integer activationStatus, Instant dateTime);
 
     Optional<User> findOneByResetKey(String resetKey);
 
     Optional<User> findOneByEmailIgnoreCase(String email);
 
-    Optional<User> findOneByLogin(String login);
+    Optional<User> findOneByUsername(String username);
 
-    @EntityGraph(attributePaths = "authorities")
-    Optional<User> findOneWithAuthoritiesById(Long id);
+    @EntityGraph(attributePaths = "roles")
+    Optional<User> findOneWithRolesById(Long id);
 
-    @EntityGraph(attributePaths = "authorities")
-    @Cacheable(cacheNames = USERS_BY_LOGIN_CACHE)
-    Optional<User> findOneWithAuthoritiesByLogin(String login);
+    @EntityGraph(attributePaths = "roles")
+    @Cacheable(cacheNames = USERS_BY_USERNAME_CACHE)
+    Optional<User> findOneWithRolesByUsername(String username);
 
-    @EntityGraph(attributePaths = "authorities")
+    @EntityGraph(attributePaths = "roles")
     @Cacheable(cacheNames = USERS_BY_EMAIL_CACHE)
-    Optional<User> findOneWithAuthoritiesByEmail(String email);
+    Optional<User> findOneWithRolesByEmail(String email);
 
-    Page<User> findAllByLoginNot(Pageable pageable, String login);
+    Page<User> findAllByUsernameNot(Pageable pageable, String username);
 }

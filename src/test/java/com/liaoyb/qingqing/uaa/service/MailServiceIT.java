@@ -121,7 +121,7 @@ public class MailServiceIT {
     @Test
     public void testSendEmailFromTemplate() throws Exception {
         User user = new User();
-        user.setLogin("john");
+        user.setUsername("john");
         user.setEmail("john.doe@example.com");
         user.setLangKey("en");
         mailService.sendEmailFromTemplate(user, "mail/testEmail", "email.test.title");
@@ -138,7 +138,7 @@ public class MailServiceIT {
     public void testSendActivationEmail() throws Exception {
         User user = new User();
         user.setLangKey(Constants.DEFAULT_LANGUAGE);
-        user.setLogin("john");
+        user.setUsername("john");
         user.setEmail("john.doe@example.com");
         mailService.sendActivationEmail(user);
         verify(javaMailSender).send(messageCaptor.capture());
@@ -153,7 +153,7 @@ public class MailServiceIT {
     public void testCreationEmail() throws Exception {
         User user = new User();
         user.setLangKey(Constants.DEFAULT_LANGUAGE);
-        user.setLogin("john");
+        user.setUsername("john");
         user.setEmail("john.doe@example.com");
         mailService.sendCreationEmail(user);
         verify(javaMailSender).send(messageCaptor.capture());
@@ -168,7 +168,7 @@ public class MailServiceIT {
     public void testSendPasswordResetMail() throws Exception {
         User user = new User();
         user.setLangKey(Constants.DEFAULT_LANGUAGE);
-        user.setLogin("john");
+        user.setUsername("john");
         user.setEmail("john.doe@example.com");
         mailService.sendPasswordResetMail(user);
         verify(javaMailSender).send(messageCaptor.capture());

@@ -1,7 +1,10 @@
 package com.liaoyb.qingqing.uaa.security;
 
+import com.liaoyb.qingqing.security.Userdetail;
 import com.liaoyb.qingqing.uaa.domain.User;
 import com.liaoyb.qingqing.uaa.repository.UserRepository;
+import com.liaoyb.qingqing.uaa.service.dto.UserWithAuthoritiesDTO;
+import com.liaoyb.qingqing.uaa.service.mapper.UserMapper;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -26,8 +30,11 @@ public class DomainUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public DomainUserDetailsService(UserRepository userRepository) {
+    private final UserMapper userMapper;
+
+    public DomainUserDetailsService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -36,27 +43,34 @@ public class DomainUserDetailsService implements UserDetailsService {
         log.debug("Authenticating {}", login);
 
         if (new EmailValidator().isValid(login, null)) {
-            return userRepository.findOneWithAuthoritiesByEmail(login)
-                .map(user -> createSpringSecurityUser(login, user))
-                .orElseThrow(() -> new UsernameNotFoundException("User with email " + login + " was not found in the database"));
+            return userRepository.findOneWithRolesByEmail(login)
+                    .map(user -> createSpringSecurityUser(login, user))
+                    .orElseThrow(() -> new UsernameNotFoundException("User with email " + login + " was not found in the database"));
         }
 
         String lowercaseLogin = login.toLowerCase(Locale.ENGLISH);
-        return userRepository.findOneWithAuthoritiesByLogin(lowercaseLogin)
-            .map(user -> createSpringSecurityUser(lowercaseLogin, user))
-            .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database"));
+        return userRepository.findOneWithRolesByUsername(lowercaseLogin)
+                .map(user -> createSpringSecurityUser(lowercaseLogin, user))
+                .orElseThrow(() -> new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database"));
 
     }
 
     private org.springframework.security.core.userdetails.User createSpringSecurityUser(String lowercaseLogin, User user) {
-        if (!user.getActivated()) {
+        if (!user.activated()) {
             throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
         }
-        List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
-            .map(authority -> new SimpleGrantedAuthority(authority.getName()))
-            .collect(Collectors.toList());
-        return new org.springframework.security.core.userdetails.User(user.getLogin(),
-            user.getPassword(),
-            grantedAuthorities);
+        //用户权限
+        UserWithAuthoritiesDTO userWithAuthoritiesDTO = userMapper.userToUserWithAuthoritiesDTO(user);
+        List<GrantedAuthority> grantedAuthorities = userWithAuthoritiesDTO.getAuthorities().stream()
+                .map(authority -> new SimpleGrantedAuthority(authority))
+                .collect(Collectors.toList());
+
+        if(grantedAuthorities.isEmpty()){
+            throw new UserWithoutAuthorityException("User " + lowercaseLogin + " without authorities");
+        }
+
+        return new Userdetail(user.getId(), user.getUsername(),
+                user.getPassword(),
+                grantedAuthorities);
     }
 }

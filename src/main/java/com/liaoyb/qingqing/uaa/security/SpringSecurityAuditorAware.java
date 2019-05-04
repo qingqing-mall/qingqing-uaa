@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
  * Implementation of {@link AuditorAware} based on Spring Security.
  */
 @Component
-public class SpringSecurityAuditorAware implements AuditorAware<String> {
+public class SpringSecurityAuditorAware implements AuditorAware<Long> {
 
     @Override
-    public Optional<String> getCurrentAuditor() {
-        return Optional.of(SecurityUtils.getCurrentUserLogin().orElse(Constants.SYSTEM_ACCOUNT));
+    public Optional<Long> getCurrentAuditor() {
+        return Optional.of(SecurityUtils.getCurrentUserId().orElse(Constants.DEFAULT_ACCOUNT));
     }
 }

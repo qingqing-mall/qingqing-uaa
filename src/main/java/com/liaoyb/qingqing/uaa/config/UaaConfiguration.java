@@ -1,5 +1,6 @@
 package com.liaoyb.qingqing.uaa.config;
 
+import com.liaoyb.qingqing.security.QingqingUserAuthenticationConverter;
 import com.liaoyb.qingqing.uaa.security.AuthoritiesConstants;
 import io.github.jhipster.config.JHipsterProperties;
 import org.springframework.beans.BeansException;
@@ -22,6 +23,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -178,6 +180,10 @@ public class UaaConfiguration extends AuthorizationServerConfigurerAdapter imple
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        DefaultAccessTokenConverter tokenConverter = new DefaultAccessTokenConverter();
+        tokenConverter.setUserTokenConverter(new QingqingUserAuthenticationConverter());
+        converter.setAccessTokenConverter(tokenConverter);
+
         KeyPair keyPair = new KeyStoreKeyFactory(
              new ClassPathResource(uaaProperties.getKeyStore().getName()), uaaProperties.getKeyStore().getPassword().toCharArray())
              .getKeyPair(uaaProperties.getKeyStore().getAlias());

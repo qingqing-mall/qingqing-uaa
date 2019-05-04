@@ -1,0 +1,87 @@
+//这里User2其实就是User,为了不和jhipster默认的user冲突。需手动把原来的User类改掉
+entity User2 (qingqing_user){
+	id Long required
+
+	username String  required/** 用户名 */
+	nickname String required/** 昵称 */
+	email String required/** 邮箱 */
+	password String required/** 密码 */
+	phone String required/** 手机号码 */
+	imageUrl String required/** 头像 */
+	gender Integer required/** 性别：0->未知；1->男；2->女 */
+	birthday Instant required /** 生日 */
+	city String required /** 所在城市 */
+	langKey String minlength(2) maxlength(20) /** 语言 */
+	activeStatus Integer required /** 帐号启用状态:0->禁用；1->启用 */
+    activationStatus Integer required /** 帐号激活状态:0-未激活；1-已激活 */
+    activationKey String maxlength(20) /** 激活key */
+    resetKey String maxlength(20) /** 重置密码key */
+    resetDate Instant /** 重置密码时间(有效期24小时) */
+
+	createdBy Long /** 创建者 */
+	createdDate Instant /** 创建时间 */
+	lastModifiedBy Long /** 更新者 */
+	lastModifiedDate Instant /** 最后更新时间 */
+}
+
+entity UserReceiveAddress (qingqing_user_receive_address) {
+	id Long required
+	userId Long required /** 用户id */
+	name String required /** 收货人名称 */
+	phone String required /** 收货人电话 */
+	defaultStatus Integer required /** 是否为默认(0-否，1-是) */
+	postCode String required /** 邮政编码 */
+	province String required /** 省份/直辖市 */
+	city String required /** 城市 */
+	region String required /** 区 */
+	detailAddress String required /** 详细地址(街道) */
+
+	createdBy Long /** 创建者 */
+	createdDate Instant /** 创建时间 */
+	lastModifiedBy Long /** 更新者 */
+	lastModifiedDate Instant /** 最后更新时间 */
+}
+
+entity Role (qingqing_role) {
+	id Long required
+	name String required /** 名称 */
+	description String required /** 描述 */
+	activeStatus Integer required /** 启用状态：0->禁用；1->启用 */
+
+	createdBy Long /** 创建者 */
+	createdDate Instant /** 创建时间 */
+	lastModifiedBy Long /** 更新者 */
+	lastModifiedDate Instant /** 最后更新时间 */
+}
+
+entity Permission (qingqing_permission) {
+	id Long required
+	parentId Long required /** 父级权限id：0表示一级 */
+	name String required /** 名称 */
+	value String required /** 权限值 */
+	icon String required /** 图标 */
+	type Integer required /** 权限类型：0->目录；1->菜单；2->按钮 3->接口 */
+	method Integer required /** 方法：GET、POST、PUT、DELETE、PATCH */
+    sort Integer required /** 排序 */
+
+	createdBy Long /** 创建者 */
+	createdDate Instant /** 创建时间 */
+	lastModifiedBy Long /** 更新者 */
+	lastModifiedDate Instant /** 最后更新时间 */
+}
+
+relationship ManyToMany {
+	Role{permissions} to Permission
+}
+
+// Set pagination options
+paginate UserReceiveAddress with infinite-scroll
+paginate User2 with pagination
+paginate Role with pagination
+paginate Permission with pagination
+
+// Use Data Transfert Objects (DTO)
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceClass
